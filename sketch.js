@@ -1,48 +1,83 @@
 
 
+ let presets =
+  {
+    minimumRadious: 50,
+    maximumRadious: 320,
+    rotationSpeed: 0.09,
+    lineWeight: 20,
+    numberOfParts: 7,
+    numberOfElements: 8,
+    numberOfFragments: 19,
+    colorObject: [255, 255, 255],
+    colorObjectBG:[143, 119, 119], 
+
+  
+  }
+
+
+
 function setup() {
-  createCanvas(500, 500);
+  createCanvas(windowWidth, windowHeight);
   angleMode(DEGREES);
 
+  let gui = new dat.GUI();
 
-  s4 = createSlider(5, 240, 50, 1).position(520, 50);
-  p4 = createP('Minimum Radius').position(520, 10);
-  s5 = createSlider(5, 240, 200, 1).position(520, 100);
-  p5 = createP('Maximum Radius').position(520, 60);
-  s6 = createSlider(-1, 1, -0.1, 0.05).position(520, 150);
-  p6 = createP('Rotation Speed').position(520, 110);
-  s7 = createSlider(1, 12, 5, 1).position(520, 200);
-  p7 = createP('Line Weight').position(520, 160);
+  gui.add(presets, 'numberOfElements', 1, 10, 1);  //p1
+  gui.add(presets, 'numberOfParts', 1, 12);  //p2
+  gui.add(presets, 'numberOfFragments', 1,30) //p3
+  gui.add(presets, 'minimumRadious', 0, 240);  //p4
+  gui.add(presets, 'maximumRadious', 5, height * 0.60);  //p5
+  gui.add(presets, 'rotationSpeed', -0.1, 0.1, 0.001);  //p6
+  gui.add(presets, 'lineWeight', 1, 30);  //p7
 
-  s2 = createSlider(0, 10, 5, 1).position(520, 250);
-  p2 = createP('Number Of Parts').position(520, 210);
-  s1 = createSlider(1, 10, 5, 1).position(520, 300);
-  p1 = createP('Number Of Elements').position(520, 260);
-  s3 = createSlider(3, 30, 3, 1).position(520, 350);
-  p3 = createP('Number Of Fragments').position(520, 310);
+  // gui.addColor(presets, 'colorObject', 'color');
+  gui.addColor(presets, 'colorObjectBG', 'color');
+
+  gui.close();
   
- 
+
+  
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+
 }
 
 function draw() {
-  background(0, 80);
+  background(presets.colorObjectBG, 5);
   
   translate(width/2, height/2);
 
   noFill();
 
-  strokeWeight(s7.value());
-  for(var n = 0; n < s1.value(); n++) {
-    stroke(150 + n *20, 199 + n * 5, 50, 80);
+  strokeWeight(presets.lineWeight);
+  for(var n = 0; n < presets.numberOfElements; n++) {
+    // stroke(presets.color);
+  
   beginShape();
 
-  for (var i = 0; i < 360; i += s3.value()) {
-    var rad = map(sin(i * s2.value() + frameCount), -1, 1, s4.value(), s5.value());
+  for (var i = 0; i < 360; i += presets.numberOfFragments) {
+    let r = map(sin(i + frameCount ), -1, 1, 15, 255);
+    let g = map(cos(i + frameCount ), -1, 1, 15, 255)
+    let b = map(cos(i + frameCount ), -1, 1, 20, 255)
+    
+ let color = [r,g,b]
+    stroke(color);
+    circle(x, y, 10);
+    var rad = map(sin(i * presets.numberOfParts + frameCount), -1, 1, presets.minimumRadious, presets.maximumRadious);
     var x = rad * cos(i);
     var y = rad * sin(i);
+    noStroke();
     vertex(x, y);
+    
+   
+  
+   
   }
   endShape(CLOSE);
-  rotate(frameCount* s6.value());
+  
+  rotate(frameCount* presets.rotationSpeed);
 }
 }
